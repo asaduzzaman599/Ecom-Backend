@@ -16,4 +16,54 @@ model User {
   phone String?  @unique
   firstName  String?
   lastName  String?
+  role Role @default(Customer)
+
+  userSetting UserSetting?
+
+  
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+enum Role {
+  SuperAdmin
+  Admin
+  Customer
+}
+
+model UserSetting {
+  id String @id @default(uuid())
+  title String  @unique
+  internalName String  @unique
+  stringValue String
+  numberValue Int
+  booleanValue Boolean @default(false)
+  valueType SettingValueType
+  isActive Boolean @default(true)
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt 
+}
+
+model CommonSetting {
+  id String @id @default(uuid())
+  title String  @unique
+  internalName String  @unique
+  stringValue String
+  numberValue Int
+  booleanValue Boolean @default(false)
+  valueType SettingValueType
+  isActive Boolean @default(true)
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+enum SettingValueType {
+  NumberValue
+  BooleanValue
+  stringValue
 }
