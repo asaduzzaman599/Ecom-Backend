@@ -1,9 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { SignupDto, LoginDto, UpdatePasswordDto } from './dto/auth-input.dto';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
+import { UsersService } from 'src/users/users.service';
+import { LoginDto, SignupDto, UpdatePasswordDto } from './dto/auth-input.dto';
+import { User } from 'libs/common/types/User';
 
 @Injectable()
 export class AuthService {
-  signup(signupDto: SignupDto) {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  signup(signupDto: Partial<SignupDto>) {
     return 'This action adds a new auth';
   }
 
@@ -19,7 +28,19 @@ export class AuthService {
     return 'This action adds a new auth';
   }
 
-  remove() {
+  remove(id: string) {
     return 'This action remove a new auth';
+  }
+
+  async validateUser(args: { phone: string; pass: string }): Promise<User> {
+    const { pass, phone } = args;
+    const user = await this.usersService.findOne({ phone });
+    if (!user) return null;
+
+    const isPassMatched = await bcrypt.compare(pass, user.password);
+    if (!isPassMatched) return null;
+
+    const { password, ...result } = user;
+    return result;
   }
 }

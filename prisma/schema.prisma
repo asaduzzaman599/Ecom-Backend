@@ -16,6 +16,7 @@ model User {
   phone String?  @unique
   firstName  String?
   lastName  String?
+  password  String?
   role Role @default(Customer)
 
   userSetting UserSetting?
