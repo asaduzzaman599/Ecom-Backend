@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionsFilter } from 'libs/error/all-exceptions.filter';
+import { AllExceptionsFilter } from 'libs/errors/all-exceptions.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
