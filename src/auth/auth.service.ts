@@ -12,8 +12,24 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  signup(signupDto: Partial<SignupDto>) {
-    return 'This action adds a new auth';
+  async signup(signupDto: Partial<SignupDto>) {
+    const saltOrRound = parseInt(
+      this.configService.get<'string'>('SALT_OR_ROUNDS') ?? '8',
+    );
+
+    const password = await bcrypt.hash(signupDto.password, saltOrRound);
+
+    const data: SignupDto = {
+      firstName: signupDto.firstName,
+      lastName: signupDto.lastName,
+      email: signupDto.email,
+      phone: signupDto.phone,
+      password: password,
+      role: signupDto.role,
+      ...(signupDto.image ? { image: signupDto.image } : null),
+    };
+
+    return this.usersService.create(data);
   }
 
   login(loginDto: LoginDto) {

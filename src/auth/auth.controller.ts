@@ -2,30 +2,32 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import { LocalAuthGuard } from 'libs/guards/auth-local.guard';
 import { AuthService } from './auth.service';
-import { LoginDto, SignupDto, UpdatePasswordDto } from './dto/auth-input.dto';
+import { SignupDto, UpdatePasswordDto } from './dto/auth-input.dto';
 import { Public } from 'libs/decorator/public_access.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post()
   signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(signupDto);
   }
 
-  @UseGuards(LocalAuthGuard)
+  @Public()
+  @UseGuards(AuthGuard('local'))
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Request() req) {
+    return req.user;
   }
 
   @Patch()
