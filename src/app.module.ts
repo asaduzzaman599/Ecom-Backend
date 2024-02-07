@@ -10,9 +10,11 @@ import { UsersModule } from './users/users.module';
 import { GuardProvider } from 'libs/providers/auth-guard.provider';
 import { PassportModule } from '@nestjs/passport';
 import { CategoriesModule } from './categories/categories.module';
+import { MasterModule } from 'libs/master/master.module';
 
 @Module({
   imports: [
+    MasterModule,
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,

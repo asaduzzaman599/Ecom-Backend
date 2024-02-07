@@ -1,21 +1,23 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { MasterService } from 'libs/master/master.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private customPrisma: MasterService) {}
 
   create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto });
+    return this.customPrisma.user.create({
+      data: createUserDto,
+    });
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.customPrisma.user.findMany();
   }
   async findOne(args: { phone: string }) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.customPrisma.user.findUnique({
       where: args,
     });
 
@@ -25,7 +27,7 @@ export class UsersService {
   }
 
   async findOneById(id: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.customPrisma.user.findUnique({
       where: { id },
     });
 
@@ -38,7 +40,11 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(id: string) {
+    return this.customPrisma.user.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

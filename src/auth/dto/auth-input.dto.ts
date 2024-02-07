@@ -9,7 +9,7 @@ export class SignupDto {
   firstName: string;
   lastName: string;
   email?: string;
-  phone: number;
+  phone: string;
   password: string;
   role: User['role'];
   image?: string;
