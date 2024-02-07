@@ -1,7 +1,7 @@
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -27,6 +27,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      ...((exception as { message?: string })?.message
+        ? { message: (exception as { message?: string }).message }
+        : null),
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
