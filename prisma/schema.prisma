@@ -19,6 +19,8 @@ model User {
   password  String?
   role Role @default(Customer)
 
+  requiredPasswordChange Boolean? @default(false)
+
   userSetting UserSetting?
 
   
@@ -68,4 +70,97 @@ enum SettingValueType {
   NumberValue
   BooleanValue
   stringValue
+}
+
+
+model Type {
+  id String @id @default(uuid())
+  title String
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deleted Boolean @default(false)
+
+  category Category[]
+  goods Goods[]
+}
+
+model Category{
+  id String @id @default(uuid())
+  title String
+
+  typeId String
+  type Type @relation(fields: [typeId], references: [id])
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deleted Boolean @default(false)
+
+  subCategory SubCategory[]
+  goods Goods[]
+}
+
+model SubCategory{
+  id String @id @default(uuid())
+  title String
+
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id])
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deleted Boolean @default(false)
+  
+  goods Goods[]
+}
+
+model Group{
+  id String @id @default(uuid())
+  title String
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deleted Boolean @default(false)
+  
+  goods GroupsOnGoods[]
+}
+
+
+model GroupsOnGoods{
+  goodId  String
+  goods Goods @relation(fields: [goodId], references: [id])
+  groupId  String
+  groups Group @relation(fields: [groupId], references: [id])
+  
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deleted Boolean @default(false)
+
+  @@id([goodId, groupId])
+}
+
+
+model Goods {
+  id String @id @default(uuid())
+  title String
+  description String
+  imageUrls String[]
+  price Float
+  isActive Boolean @default(true)  
+  
+  typeId String
+  type Type @relation(fields: [typeId], references: [id])
+
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id])
+
+  subCategoryId String
+  subCategory SubCategory @relation(fields: [subCategoryId], references: [id])
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deleted Boolean @default(false)
+  
+  groups GroupsOnGoods[]
 }
