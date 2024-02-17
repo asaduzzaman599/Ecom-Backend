@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { MasterService } from 'libs/master/master.service';
+import { CreateAdminDto } from 'src/auth/dto/auth-input.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DefaultArgs } from '@prisma/client/runtime/library'
 
 @Injectable()
 export class UsersService {
   constructor(private customPrisma: MasterService) {}
 
-  create(createUserDto: CreateUserDto) {
+  create(createUserDto: CreateUserDto | CreateAdminDto) {
     return this.customPrisma.user.create({
       data: createUserDto,
     });
@@ -16,9 +19,13 @@ export class UsersService {
   findAll() {
     return this.customPrisma.user.findMany();
   }
-  async findOne(args: { phone: string }) {
+  async findOne(
+    args?: Prisma.UserWhereUniqueInput,
+    select?: Prisma.UserSelect<DefaultArgs>,
+  ) {
     const user = await this.customPrisma.user.findUnique({
-      where: args,
+      ...(args ? { where: args } : null),
+      ...(select ? { select } : null),
     });
 
     //TO DO: Error if user not found
@@ -26,17 +33,7 @@ export class UsersService {
     return user;
   }
 
-  async findOneById(id: string) {
-    const user = await this.customPrisma.user.findUnique({
-      where: { id },
-    });
-
-    //TO DO: Error if user not found
-
-    return user;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 

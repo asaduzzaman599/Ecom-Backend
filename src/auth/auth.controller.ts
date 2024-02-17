@@ -15,6 +15,7 @@ import { Public } from 'libs/decorator/public_access.decorator';
 import { AuthService } from './auth.service';
 import {
   CreateAdminDto,
+  ResetPasswordDto,
   SignupDto,
   UpdatePasswordDto,
 } from './dto/auth-input.dto';
@@ -29,17 +30,23 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
 
+  @Public()
+  @UseGuards(AuthGuard('local'))
+  @Post('login')
+  async login(@Request() req) {
+    return req.user;
+  }
+
   @Admin()
   @Post('register-admin')
   registerAdmin(@Body() createAdminDto: CreateAdminDto) {
     return this.authService.registerAdmin(createAdminDto);
   }
 
-  @Public()
-  @UseGuards(AuthGuard('local'))
-  @Post('login')
-  async login(@Request() req) {
-    return req.user;
+  @All()
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 
   @All()

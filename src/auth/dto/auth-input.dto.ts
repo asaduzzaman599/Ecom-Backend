@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types'
 import { User } from '@prisma/client';
 
 export class LoginDto {
@@ -16,12 +15,17 @@ export class SignupDto {
   image?: string;
 }
 
-export class CreateAdminDto extends PartialType(SignupDto) {
+export class CreateAdminDto extends SignupDto {
   requiredPasswordChange?: boolean;
 }
 
+export class ResetPasswordDto {
+  phone: string;
+  oldPassword: string;
+  newPassword: string;
+}
+
 export class UpdatePasswordDto {
-  phone: number;
   newPassword: string;
   oldPassword: string;
 }

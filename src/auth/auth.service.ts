@@ -6,6 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import {
   CreateAdminDto,
   LoginDto,
+  ResetPasswordDto,
   SignupDto,
   UpdatePasswordDto,
 } from './dto/auth-input.dto';
@@ -37,7 +38,7 @@ export class AuthService {
     return this.usersService.create(data);
   }
 
-  async registerAdmin(signupDto: Partial<CreateAdminDto>) {
+  async registerAdmin(signupDto: CreateAdminDto) {
     const saltOrRound = parseInt(
       this.configService.get<'string'>('SALT_OR_ROUNDS') ?? '8',
     );
@@ -52,7 +53,7 @@ export class AuthService {
       lastName: signupDto.lastName,
       email: signupDto.email,
       phone: signupDto.phone,
-      password: password,
+      password,
       role: signupDto.role,
       requiredPasswordChange: true,
       ...(signupDto.image ? { image: signupDto.image } : null),
@@ -65,12 +66,57 @@ export class AuthService {
     return 'This action adds a new auth';
   }
 
-  /* resetPassword(signupDto: SignupDto) {
-    return 'This action adds a new auth';
-  } */
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const user = await this.usersService.findOne({
+      phone: resetPasswordDto.phone,
+    });
+    if (!user) {
+      //TO DO: throw error: user not exist
+    }
 
-  updatePassword(updatePasswordDto: UpdatePasswordDto) {
-    return 'This action adds a new auth';
+    const isValidPhone = false; // do something with otp
+
+    if (!isValidPhone) {
+      //TO DO: throw error: credential not matched
+    }
+
+    const saltOrRound = parseInt(
+      this.configService.get<'string'>('SALT_OR_ROUNDS') ?? '8',
+    );
+
+    const password = await bcrypt.hash(
+      resetPasswordDto.newPassword,
+      saltOrRound,
+    );
+
+    return this.usersService.update(user.id, { password });
+  }
+
+  async updatePassword(updatePasswordDto: UpdatePasswordDto) {
+    const user = await this.usersService.findOne({ id: 'id' });
+    if (!user) {
+      //throw error: user not exist
+    }
+
+    const isPassMatched = await bcrypt.compare(
+      updatePasswordDto.oldPassword,
+      user.password,
+    );
+
+    if (!isPassMatched) {
+      //throw error: credential not matched
+    }
+
+    const saltOrRound = parseInt(
+      this.configService.get<'string'>('SALT_OR_ROUNDS') ?? '8',
+    );
+
+    const password = await bcrypt.hash(
+      updatePasswordDto.newPassword,
+      saltOrRound,
+    );
+
+    return this.usersService.update(user.id, { password });
   }
 
   remove(id: string) {
