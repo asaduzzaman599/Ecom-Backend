@@ -15,11 +15,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       context.getClass(),
     ]);
 
-    if (isPublic !== false && !isPublic) return false;
-
     if (isPublic) {
       return true;
     }
+
     return super.canActivate(context);
   }
 }

@@ -19,7 +19,7 @@ export class MasterService
           ...params.args,
           where: {
             ...params.args?.where,
-            deletedAt: null,
+            deleted: false,
           },
         },
       });

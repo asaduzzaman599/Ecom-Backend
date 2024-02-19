@@ -4,7 +4,7 @@ import { MasterService } from 'libs/master/master.service';
 import { CreateAdminDto } from 'src/auth/dto/auth-input.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DefaultArgs } from '@prisma/client/runtime/library'
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +19,7 @@ export class UsersService {
   findAll() {
     return this.customPrisma.user.findMany();
   }
+
   async findOne(
     args?: Prisma.UserWhereUniqueInput,
     select?: Prisma.UserSelect<DefaultArgs>,

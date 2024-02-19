@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { User } from 'libs/common/types/User';
 import { Strategy } from 'passport-local';
 import { AuthService } from './auth.service';
+import { JWTPayload } from 'libs/common/types/jwt-payload';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -27,12 +28,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    const payload = {
+    const payload: JWTPayload = {
       id: user.id,
       email: user.email,
       phone: user.phone,
       firstName: user.firstName,
       lastName: user.lastName,
+      role: user.role,
     };
     return { user, access_token: this.jwtService.sign(payload) };
   }
