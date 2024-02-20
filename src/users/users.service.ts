@@ -29,8 +29,6 @@ export class UsersService {
       ...(select ? { select } : null),
     });
 
-    //TO DO: Error if user not found
-
     return user;
   }
 

@@ -19,6 +19,7 @@ import {
   SignupDto,
   UpdatePasswordDto,
 } from './dto/auth-input.dto';
+import { RequestWithUser } from 'libs/common/types/request-with-user';
 
 @Controller('auth')
 export class AuthController {
@@ -51,11 +52,14 @@ export class AuthController {
 
   @All()
   @Patch()
-  updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
-    return this.authService.updatePassword(updatePasswordDto);
+  updatePassword(
+    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Request() context: RequestWithUser,
+  ) {
+    return this.authService.updatePassword(updatePasswordDto, context);
   }
 
-  @Public()
+  @Admin()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.authService.remove(id);

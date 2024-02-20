@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { User } from 'libs/common/types/User';
+import { RequestWithUser } from 'libs/common/types/request-with-user';
 import { UsersService } from 'src/users/users.service';
 import {
   CreateAdminDto,
-  LoginDto,
   ResetPasswordDto,
   SignupDto,
   UpdatePasswordDto,
@@ -62,22 +66,18 @@ export class AuthService {
     return this.usersService.create(data);
   }
 
-  login(loginDto: LoginDto) {
-    return 'This action adds a new auth';
-  }
-
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const user = await this.usersService.findOne({
       phone: resetPasswordDto.phone,
     });
     if (!user) {
-      //TO DO: throw error: user not exist
+      throw new NotFoundException('user not found');
     }
 
-    const isValidPhone = false; // do something with otp
+    const isValidPhone = false; // TO DO: do something with otp
 
     if (!isValidPhone) {
-      //TO DO: throw error: credential not matched
+      throw new ForbiddenException('forbidden');
     }
 
     const saltOrRound = parseInt(
@@ -92,10 +92,13 @@ export class AuthService {
     return this.usersService.update(user.id, { password });
   }
 
-  async updatePassword(updatePasswordDto: UpdatePasswordDto) {
-    const user = await this.usersService.findOne({ id: 'id' });
+  async updatePassword(
+    updatePasswordDto: UpdatePasswordDto,
+    context: RequestWithUser,
+  ) {
+    const user = await this.usersService.findOne({ id: context?.user?.id });
     if (!user) {
-      //throw error: user not exist
+      throw new NotFoundException('user not found');
     }
 
     const isPassMatched = await bcrypt.compare(
@@ -104,7 +107,7 @@ export class AuthService {
     );
 
     if (!isPassMatched) {
-      //throw error: credential not matched
+      throw new ForbiddenException('forbidden');
     }
 
     const saltOrRound = parseInt(
@@ -120,7 +123,7 @@ export class AuthService {
   }
 
   remove(id: string) {
-    return 'This action remove a new auth';
+    return this.usersService.remove(id);
   }
 
   async validateUser(args: { phone: string; pass: string }): Promise<User> {
