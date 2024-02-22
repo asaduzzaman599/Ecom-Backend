@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
+import { AdminAccess } from 'libs/common/constant/admin-access';
+import { RequestWithUser } from 'libs/common/types/request-with-user';
 import { MasterService } from 'libs/master/master.service';
 import { CreateAdminDto } from 'src/auth/dto/auth-input.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersService {
@@ -32,8 +34,20 @@ export class UsersService {
     return user;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    context: RequestWithUser,
+  ) {
+    const args = {
+      id: AdminAccess.includes(context.user.role) ? id : context.user.id,
+    };
+
+    const user = await this.findOne(args);
+
+    if (!user) throw new ForbiddenException('forbidden');
+
+    return this.customPrisma.user.update({ where: args, data: updateUserDto });
   }
 
   remove(id: string) {
