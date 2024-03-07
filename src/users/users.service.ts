@@ -18,8 +18,10 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return this.customPrisma.user.findMany();
+  async findAll() {
+    const result = await this.customPrisma.user.findMany();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return result.map(({ password, ...data }) => data);
   }
 
   async findOne(
