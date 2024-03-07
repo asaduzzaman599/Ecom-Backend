@@ -119,7 +119,7 @@ export class AuthService {
       saltOrRound,
     );
 
-    return this.usersService.update(user.id, { password });
+    return this.usersService.update(user.id, { password }, context);
   }
 
   remove(id: string) {

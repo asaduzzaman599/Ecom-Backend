@@ -37,10 +37,13 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-    context: RequestWithUser,
+    context?: RequestWithUser,
   ) {
     const args = {
-      id: AdminAccess.includes(context.user.role) ? id : context.user.id,
+      id:
+        context && !AdminAccess.includes(context.user.role) //admin or forget pass with otp only allow pass change with out context
+          ? context.user.id
+          : id,
     };
 
     const user = await this.findOne(args);

@@ -11,7 +11,7 @@ import {
 import { Admin } from 'libs/decorator/admin_access.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { RequestWithUser } from 'libs/common/types/request-with-user'
+import { RequestWithUser } from 'libs/common/types/request-with-user';
 
 @Controller('users')
 export class UsersController {
