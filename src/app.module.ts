@@ -11,6 +11,7 @@ import { GuardProvider } from 'libs/providers/auth-guard.provider';
 import { PassportModule } from '@nestjs/passport';
 import { CategoriesModule } from './categories/categories.module';
 import { MasterModule } from 'libs/master/master.module';
+import { GoodsModule } from './goods/goods.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MasterModule } from 'libs/master/master.module';
     AuthModule,
     PrismaModule,
     CategoriesModule,
+    GoodsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -149,14 +149,14 @@ model Goods {
   price Float
   isActive Boolean @default(true)  
   
-  typeId String
-  type Type @relation(fields: [typeId], references: [id])
+  typeId String?
+  type Type? @relation(fields: [typeId], references: [id])
 
   categoryId String
   category Category @relation(fields: [categoryId], references: [id])
 
-  subCategoryId String
-  subCategory SubCategory @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String?
+  subCategory SubCategory? @relation(fields: [subCategoryId], references: [id])
 
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt

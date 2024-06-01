@@ -1,26 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
+import { MasterService } from 'libs/master/master.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
+  constructor(private customPrisma: MasterService) {}
+
   create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+    return this.customPrisma.category.create({
+      data: createCategoryDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all categories hi`;
+  async findAll(
+    args?: Prisma.CategoryWhereUniqueInput,
+    select?: Prisma.CategorySelect<DefaultArgs>,
+  ) {
+    return await this.customPrisma.category.findMany({
+      ...(args ? { where: args } : null),
+      ...(select ? { select } : null),
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category hi`;
+  async findOne(
+    args?: Prisma.CategoryWhereUniqueInput,
+    select?: Prisma.CategorySelect<DefaultArgs>,
+  ) {
+    return await this.customPrisma.category.findUnique({
+      ...(args ? { where: args } : null),
+      ...(select ? { select } : null),
+    });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: Prisma.CategoryUpdateInput) {
+    const exist = await this.findOne({ id });
+    if (!exist) throw new NotFoundException('Category not found!');
+
+    return this.customPrisma.category.update({
+      where: {
+        id,
+      },
+      data: updateCategoryDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    const exist = await this.findOne({ id });
+    if (!exist) throw new NotFoundException('Category not found!');
+
+    return this.customPrisma.category.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

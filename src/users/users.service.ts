@@ -18,8 +18,11 @@ export class UsersService {
     });
   }
 
-  async findAll() {
-    const result = await this.customPrisma.user.findMany();
+  async findAll(args?: Prisma.UserWhereUniqueInput) {
+    const result = await this.customPrisma.user.findMany({
+      ...(args ? { where: args } : null),
+    });
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return result.map(({ password, ...data }) => data);
   }
