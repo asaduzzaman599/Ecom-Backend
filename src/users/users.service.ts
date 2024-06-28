@@ -4,7 +4,6 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 import { AdminAccess } from 'libs/common/constant/admin-access';
 import { RequestWithUser } from 'libs/common/types/request-with-user';
 import { MasterService } from 'libs/master/master.service';
-import { CreateAdminDto } from 'src/auth/dto/auth-input.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -12,19 +11,19 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private customPrisma: MasterService) {}
 
-  create(createUserDto: CreateUserDto | CreateAdminDto) {
-    return this.customPrisma.user.create({
+  create(
+    createUserDto: CreateUserDto,
+    options?: { tx?: Prisma.TransactionClient },
+  ) {
+    return (options?.tx ?? this.customPrisma).user.create({
       data: createUserDto,
     });
   }
 
   async findAll(args?: Prisma.UserWhereUniqueInput) {
-    const result = await this.customPrisma.user.findMany({
+    return await this.customPrisma.user.findMany({
       ...(args ? { where: args } : null),
     });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return result.map(({ password, ...data }) => data);
   }
 
   async findOne(

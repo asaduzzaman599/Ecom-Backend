@@ -5,7 +5,6 @@ export class CreateUserDto {
   lastName: string;
   email?: string;
   phone: string;
-  password: string;
   role: User['role'];
   image?: string;
 }

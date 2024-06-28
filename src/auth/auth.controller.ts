@@ -14,7 +14,6 @@ import { Admin } from 'libs/decorator/admin_access.decorator';
 import { Public } from 'libs/decorator/public_access.decorator';
 import { AuthService } from './auth.service';
 import {
-  CreateAdminDto,
   ResetPasswordDto,
   SignupDto,
   UpdatePasswordDto,
@@ -40,7 +39,7 @@ export class AuthController {
 
   @Admin()
   @Post('register-admin')
-  registerAdmin(@Body() createAdminDto: CreateAdminDto) {
+  registerAdmin(@Body() createAdminDto: SignupDto) {
     return this.authService.registerAdmin(createAdminDto);
   }
 
