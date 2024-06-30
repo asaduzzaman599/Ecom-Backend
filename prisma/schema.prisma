@@ -11,16 +11,16 @@ datasource db {
 }
 
 model Auth {
-  id        String   @id @default(uuid())
-  email     String?  @unique
-  phone     String   @unique
-  password  String
-  role      Role     @default(Customer)
+  id       String  @id @default(uuid())
+  email    String? @unique
+  phone    String  @unique
+  password String
+  role     Role    @default(Customer)
 
   requiredPasswordChange Boolean? @default(false)
 
   userId String @unique
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -28,15 +28,16 @@ model Auth {
 }
 
 model User {
-  id        String  @id @default(uuid())
-  email     String? @unique
-  phone     String  @unique
-  firstName String?
-  lastName  String?
-  role      Role    @default(Customer)
+  id          String       @id @default(uuid())
+  email       String?      @unique
+  phone       String       @unique
+  firstName   String?
+  lastName    String?
+  role        Role         @default(Customer)
   userSetting UserSetting?
 
-  auth Auth?
+  auth   Auth?
+  orders Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -173,4 +174,100 @@ model Goods {
   deleted   Boolean  @default(false)
 
   groups GroupsOnGoods[]
+
+  stocks Stock[]
+}
+
+model Stock {
+  id          String  @id @default(uuid())
+  size        Size    @default(NONE)
+  color       String?
+  description String?
+  quantity    Int
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+
+  goodId String
+  good   Goods  @relation(fields: [goodId], references: [id])
+
+  orders Order[]
+}
+
+enum Size {
+  S
+  M
+  L
+  XL
+  XXL
+  NONE
+}
+
+model Order {
+  id  String @unique @default(uuid())
+  oId String @unique
+
+  status orderStatus @default(INREVIEW)
+
+  customerId String
+  customer   User   @relation(fields: [customerId], references: [id])
+
+  stockId String
+  stock   Stock  @relation(fields: [stockId], references: [id])
+
+  deliveryInfoId String @unique
+  deliveryInfo  DeliveryInfo  @relation(fields: [deliveryInfoId], references: [id])
+
+  paymentInfoId String @unique
+  paymentInfo  PaymentInfo  @relation(fields: [paymentInfoId], references: [id])
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
+
+enum orderStatus {
+  INREVIEW
+  ACCEPTED
+  INPOGRESS
+  OUTFORDELIVERY
+  DELIVERED
+  CANCELLED
+  REJECTED
+}
+
+model DeliveryInfo {
+  id      String @unique @default(uuid())
+  address String
+  phone   String
+
+  order Order?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
+
+model PaymentInfo {
+  id      String @unique @default(uuid())
+  deliveryCharge Float
+  additionalCharge Float
+  
+  paymentType PaymentType @default(COD)
+
+
+  order Order?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
+
+enum PaymentType {
+  COD
 }
