@@ -13,6 +13,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { MasterModule } from 'libs/master/master.module';
 import { GoodsModule } from './goods/goods.module';
 import { OrdersModule } from './orders/orders.module';
+import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { OrdersModule } from './orders/orders.module';
     CategoriesModule,
     GoodsModule,
     OrdersModule,
+    PaymentMethodsModule,
   ],
   controllers: [AppController],
   providers: [

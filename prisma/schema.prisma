@@ -209,7 +209,7 @@ model Order {
   id  String @unique @default(uuid())
   oId String @unique
 
-  status orderStatus @default(INREVIEW)
+  status OrderStatus @default(INREVIEW)
 
   customerId String
   customer   User   @relation(fields: [customerId], references: [id])
@@ -229,7 +229,7 @@ model Order {
   deleted   Boolean  @default(false)
 }
 
-enum orderStatus {
+enum OrderStatus {
   INREVIEW
   ACCEPTED
   INPOGRESS
@@ -237,6 +237,7 @@ enum orderStatus {
   DELIVERED
   CANCELLED
   REJECTED
+  FAILED
 }
 
 model DeliveryInfo {
@@ -254,13 +255,26 @@ model DeliveryInfo {
 
 model PaymentInfo {
   id      String @unique @default(uuid())
-  deliveryCharge Float
-  additionalCharge Float
+  additionalCharge Float  @default(0)
   
-  paymentType PaymentType @default(COD)
+  paymentMethodId String 
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
 
 
   order Order?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
+
+model PaymentMethod {
+  id String @unique @default(uuid())
+  type PaymentType @default(COD)
+  charge Float @default(0)
+
+  paymentInfo PaymentInfo[]
 
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
