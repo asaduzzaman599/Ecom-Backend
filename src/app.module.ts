@@ -12,6 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 import { CategoriesModule } from './categories/categories.module';
 import { MasterModule } from 'libs/master/master.module';
 import { GoodsModule } from './goods/goods.module';
+import { AttachmentsModule } from './attachments/attachments.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 
@@ -28,6 +29,7 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
     PrismaModule,
     CategoriesModule,
     GoodsModule,
+    AttachmentsModule,
     OrdersModule,
     PaymentMethodsModule,
   ],
