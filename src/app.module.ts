@@ -12,6 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 import { CategoriesModule } from './categories/categories.module';
 import { MasterModule } from 'libs/master/master.module';
 import { GoodsModule } from './goods/goods.module';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { GoodsModule } from './goods/goods.module';
     PrismaModule,
     CategoriesModule,
     GoodsModule,
+    AttachmentsModule,
   ],
   controllers: [AppController],
   providers: [
