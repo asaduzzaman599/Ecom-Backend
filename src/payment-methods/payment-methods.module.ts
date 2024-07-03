@@ -4,7 +4,8 @@ import { PaymentMethodsController } from './payment-methods.controller';
 import { MasterModule } from 'libs/master/master.module';
 
 @Module({
-  controllers: [PaymentMethodsController, MasterModule],
+  imports: [MasterModule],
+  controllers: [PaymentMethodsController],
   providers: [PaymentMethodsService],
 })
 export class PaymentMethodsModule {}
