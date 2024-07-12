@@ -173,7 +173,7 @@ model Goods {
   subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
 
   attachments GoodsAttachement[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -185,12 +185,12 @@ model Goods {
 
 model GoodsAttachement {
   goodsId String
-  goods Goods @relation(fields: [goodsId], references: [id])
+  goods   Goods  @relation(fields: [goodsId], references: [id])
 
-  attachmentId String @unique
-  attacment Attachment @relation(fields: [attachmentId], references: [id])
+  attachmentId String     @unique
+  attacment    Attachment @relation(fields: [attachmentId], references: [id])
 
-  @@id([goodsId,attachmentId])
+  @@id([goodsId, attachmentId])
 }
 
 
@@ -305,12 +305,12 @@ enum PaymentType {
 model Attachment {
   id           String @unique @default(uuid())
   attachmentId String
-  fileId String
-  extension String
-  mimetype String
+  fileId       String
+  extension    String
+  mimetype     String
 
   goodAtachment GoodsAttachement?
-  profile User?
+  profile       User?
 
   createdBy String?
   isActive  Boolean  @default(true)
