@@ -11,16 +11,16 @@ datasource db {
 }
 
 model Auth {
-  id        String   @id @default(uuid())
-  email     String?  @unique
-  phone     String   @unique
-  password  String
-  role      Role     @default(Customer)
+  id       String  @id @default(uuid())
+  email    String? @unique
+  phone    String  @unique
+  password String
+  role     Role    @default(Customer)
 
   requiredPasswordChange Boolean? @default(false)
 
   userId String @unique
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -28,18 +28,18 @@ model Auth {
 }
 
 model User {
-  id        String  @id @default(uuid())
-  email     String? @unique
-  phone     String  @unique
-  firstName String?
-  lastName  String?
-  role      Role    @default(Customer)
+  id          String       @id @default(uuid())
+  email       String?      @unique
+  phone       String       @unique
+  firstName   String?
+  lastName    String?
+  role        Role         @default(Customer)
   userSetting UserSetting?
 
-  auth   Auth?
+  auth Auth?
 
-  attachmentId String? @unique
-  attachment Attachment? @relation(fields: [attachmentId], references: [id])
+  attachmentId String?     @unique
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -172,7 +172,7 @@ model Goods {
   subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
 
   attachments GoodsAttachement[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -182,24 +182,23 @@ model Goods {
 
 model GoodsAttachement {
   goodsId String
-  goods Goods @relation(fields: [goodsId], references: [id])
+  goods   Goods  @relation(fields: [goodsId], references: [id])
 
-  attachmentId String @unique
-  attacment Attachment @relation(fields: [attachmentId], references: [id])
+  attachmentId String     @unique
+  attacment    Attachment @relation(fields: [attachmentId], references: [id])
 
-  @@id([goodsId,attachmentId])
+  @@id([goodsId, attachmentId])
 }
-
 
 model Attachment {
   id           String @unique @default(uuid())
   attachmentId String
-  fileId String
-  extension String
-  mimetype String
+  fileId       String
+  extension    String
+  mimetype     String
 
   goodAtachment GoodsAttachement?
-  profile User?
+  profile       User?
 
   createdBy String?
   isActive  Boolean  @default(true)
