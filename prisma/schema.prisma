@@ -36,7 +36,10 @@ model User {
   role      Role    @default(Customer)
   userSetting UserSetting?
 
-  auth Auth?
+  auth   Auth?
+
+  attachmentId String? @unique
+  attachment Attachment? @relation(fields: [attachmentId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -168,9 +171,39 @@ model Goods {
   subCategoryId String?
   subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
 
+  attachments GoodsAttachement[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
 
   groups GroupsOnGoods[]
+}
+
+model GoodsAttachement {
+  goodsId String
+  goods Goods @relation(fields: [goodsId], references: [id])
+
+  attachmentId String @unique
+  attacment Attachment @relation(fields: [attachmentId], references: [id])
+
+  @@id([goodsId,attachmentId])
+}
+
+
+model Attachment {
+  id           String @unique @default(uuid())
+  attachmentId String
+  fileId String
+  extension String
+  mimetype String
+
+  goodAtachment GoodsAttachement?
+  profile User?
+
+  createdBy String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
 }
