@@ -39,6 +39,9 @@ model User {
   auth   Auth?
   orders Order[]
 
+  attachmentId String? @unique
+  attachment Attachment? @relation(fields: [attachmentId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -169,6 +172,8 @@ model Goods {
   subCategoryId String?
   subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
 
+  attachments GoodsAttachement[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -177,6 +182,17 @@ model Goods {
 
   stocks Stock[]
 }
+
+model GoodsAttachement {
+  goodsId String
+  goods Goods @relation(fields: [goodsId], references: [id])
+
+  attachmentId String @unique
+  attacment Attachment @relation(fields: [attachmentId], references: [id])
+
+  @@id([goodsId,attachmentId])
+}
+
 
 model Stock {
   id          String  @id @default(uuid())
@@ -284,4 +300,21 @@ model PaymentMethod {
 
 enum PaymentType {
   COD
+}
+
+model Attachment {
+  id           String @unique @default(uuid())
+  attachmentId String
+  fileId String
+  extension String
+  mimetype String
+
+  goodAtachment GoodsAttachement?
+  profile User?
+
+  createdBy String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
 }
