@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { User } from '@prisma/client';
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateAuthDto {
   phone: string;

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -13,7 +14,15 @@ import { CategoryPaginatedArgs } from './dto/category.dto';
 export class CategoriesService {
   constructor(private customPrisma: MasterService) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
+  async create(createCategoryDto: CreateCategoryDto) {
+    const exist = await this.customPrisma.category.findFirst({
+      where: {
+        title: createCategoryDto.title,
+      },
+    });
+
+    if (exist) throw new ConflictException('Already Exist!');
+
     return this.customPrisma.category.create({
       data: createCategoryDto,
     });
