@@ -3,48 +3,49 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { CreateTypeDto } from './dto/create-type.dto';
+import { UpdateTypeDto } from './dto/update-type.dto';
+import { MasterService } from 'libs/master/master.service';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { MasterService } from 'libs/master/master.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoryPaginatedArgs } from './dto/category.dto';
+import { TypePaginatedArgs } from './dto/type.args';
 
 @Injectable()
-export class CategoriesService {
+export class TypesService {
   constructor(private customPrisma: MasterService) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
-    return this.customPrisma.category.create({
-      data: createCategoryDto,
+  create(createTypeDto: CreateTypeDto) {
+    return this.customPrisma.type.create({
+      data: createTypeDto,
     });
   }
 
   async findAll(
-    args?: Prisma.CategoryWhereUniqueInput,
-    select?: Prisma.CategorySelect<DefaultArgs>,
+    args?: Prisma.TypeWhereUniqueInput,
+    select?: Prisma.TypeSelect<DefaultArgs>,
   ) {
-    return await this.customPrisma.category.findMany({
+    return await this.customPrisma.type.findMany({
       ...(args ? { where: args } : null),
       ...(select ? { select } : null),
     });
   }
 
   async findAllByArgs(
-    args?: CategoryPaginatedArgs,
-    select?: Prisma.CategorySelect<DefaultArgs>,
+    args?: TypePaginatedArgs,
+    select?: Prisma.TypeSelect<DefaultArgs>,
   ) {
     try {
       const { limit: take, page, search, ...query } = args;
       const skip = page * take - take;
 
       const [categories, count] = await Promise.all([
-        this.customPrisma.category.findMany({
+        this.customPrisma.type.findMany({
           ...(query ? { where: query } : null),
           ...(select ? { select } : null),
           skip,
           take,
         }),
-        this.customPrisma.category.count({
+        this.customPrisma.type.count({
           ...(query ? { where: query } : null),
           select: {
             _all: true,
@@ -65,32 +66,32 @@ export class CategoriesService {
   }
 
   async findOne(
-    args?: Prisma.CategoryWhereUniqueInput,
-    select?: Prisma.CategorySelect<DefaultArgs>,
+    args?: Prisma.TypeWhereUniqueInput,
+    select?: Prisma.TypeSelect<DefaultArgs>,
   ) {
-    return await this.customPrisma.category.findUnique({
+    return await this.customPrisma.type.findUnique({
       ...(args ? { where: args } : null),
       ...(select ? { select } : null),
     });
   }
 
-  async update(id: string, updateCategoryDto: Prisma.CategoryUpdateInput) {
+  async update(id: string, updateTypeDto: Prisma.TypeUpdateInput) {
     const exist = await this.findOne({ id });
-    if (!exist) throw new NotFoundException('Category not found!');
+    if (!exist) throw new NotFoundException('Type not found!');
 
-    return this.customPrisma.category.update({
+    return this.customPrisma.type.update({
       where: {
         id,
       },
-      data: updateCategoryDto,
+      data: updateTypeDto,
     });
   }
 
   async remove(id: string) {
     const exist = await this.findOne({ id });
-    if (!exist) throw new NotFoundException('Category not found!');
+    if (!exist) throw new NotFoundException('Type not found!');
 
-    return this.customPrisma.category.delete({
+    return this.customPrisma.type.delete({
       where: {
         id,
       },

@@ -15,6 +15,7 @@ import { GoodsModule } from './goods/goods.module';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
+import { TypesModule } from './types/types.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
     AttachmentsModule,
     OrdersModule,
     PaymentMethodsModule,
+    TypesModule,
   ],
   controllers: [AppController],
   providers: [
