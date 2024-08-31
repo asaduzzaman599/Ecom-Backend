@@ -4,7 +4,7 @@ export class CreateGoodDto {
   imageUrls?: string[];
   price: number;
   isActive?: boolean;
-  typeId: string;
-  categoryId: string;
+  typeId?: string;
+  categoryId?: string;
   subCategoryId?: string;
 }

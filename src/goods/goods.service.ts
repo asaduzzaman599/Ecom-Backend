@@ -20,7 +20,10 @@ export class GoodsService {
   ) {
     return this.customPrisma.goods.findUnique({
       ...(args ? { where: args } : null),
-      ...(select ? { select } : null),
+      // ...(select ? { select } : null),
+      include: {
+        category: true,
+      },
     });
   }
 

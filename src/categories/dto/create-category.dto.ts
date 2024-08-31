@@ -1,4 +1,4 @@
 export class CreateCategoryDto {
   title: string;
-  typeId: string;
+  typeId?: string;
 }
