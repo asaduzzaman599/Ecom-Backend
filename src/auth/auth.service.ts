@@ -104,7 +104,7 @@ export class AuthService {
       email: signupDto.email,
       phone: signupDto.phone,
       password,
-      role: signupDto.role,
+      ...(signupDto.role ? { role: signupDto.role } : null),
       requiredPasswordChange: true,
       ...(signupDto.image ? { image: signupDto.image } : null),
     };
@@ -113,7 +113,7 @@ export class AuthService {
   }
 
   async register(signupDto: SignupDto) {
-    const { password, ...userData } = signupDto;
+    const { password, requiredPasswordChange, ...userData } = signupDto;
     return this.customPrisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
         const user = await this.usersService.create(userData, { tx });
@@ -121,9 +121,10 @@ export class AuthService {
         const authData: CreateAuthDto = {
           email: signupDto.email,
           phone: signupDto.phone,
-          role: signupDto.role,
+          ...(signupDto.role ? { role: signupDto.role } : null),
           userId: user.id,
           password,
+          requiredPasswordChange,
         };
 
         const auth = await this.create(authData, { tx });
