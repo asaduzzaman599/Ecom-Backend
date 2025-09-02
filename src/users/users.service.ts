@@ -6,6 +6,7 @@ import { RequestWithUser } from 'libs/common/types/request-with-user';
 import { MasterService } from 'libs/master/master.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationDto } from 'src/libs/common/dto/pagination';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,42 @@ export class UsersService {
     return await this.customPrisma.user.findMany({
       ...(args ? { where: args } : null),
     });
+  }
+  async findAllPaginated(paginationOption: PaginationDto) {
+    const page = +paginationOption.page;
+    const limit = +paginationOption.limit;
+    const skip = (page - 1) * limit;
+
+    const queries: Prisma.UserFindManyArgs = {
+      take: limit,
+      skip,
+    };
+    const search = paginationOption.search;
+    if (search) {
+      queries.where = {
+        OR: ['firstName', 'email', 'phone', 'lastName'].map((i) => ({
+          [i]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        })),
+      };
+    }
+
+    const [items, count] = await Promise.all([
+      this.customPrisma.user.findMany(queries),
+      this.customPrisma.user.count({ where: queries.where }),
+    ]);
+
+    return {
+      items,
+      count,
+      page,
+      limit,
+      hasNext: count > limit * page,
+      hasPrevious: page != 1 && count > 0,
+      totalPage: Math.ceil(count / limit),
+    };
   }
 
   async findOne(

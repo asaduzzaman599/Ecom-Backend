@@ -6,12 +6,14 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   Request,
 } from '@nestjs/common';
 import { Admin } from 'libs/decorator/admin_access.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { RequestWithUser } from 'libs/common/types/request-with-user';
+import { PaginationDto } from 'src/libs/common/dto/pagination';
 
 @Controller('users')
 export class UsersController {
@@ -19,8 +21,8 @@ export class UsersController {
 
   @Admin()
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.usersService.findAllPaginated(paginationDto);
   }
 
   @All()
