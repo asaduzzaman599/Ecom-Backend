@@ -7,5 +7,6 @@ import { MasterModule } from 'libs/master/master.module';
   imports: [MasterModule],
   controllers: [PaymentMethodsController],
   providers: [PaymentMethodsService],
+  exports: [PaymentMethodsService],
 })
 export class PaymentMethodsModule {}

@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TypesService } from './types.service';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { UpdateTypeDto } from './dto/update-type.dto';
+import { TypePaginatedArgs } from './dto/type.args';
 
 @Controller('types')
 export class TypesController {
@@ -21,6 +23,11 @@ export class TypesController {
   }
 
   @Get()
+  findAllByArgs(@Query() queries?: TypePaginatedArgs) {
+    return this.typesService.findAllByArgs(queries);
+  }
+
+  @Get('all')
   findAll() {
     return this.typesService.findAll();
   }

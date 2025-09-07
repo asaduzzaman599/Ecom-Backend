@@ -93,8 +93,9 @@ enum SettingValueType {
 model Type {
   id    String @id @default(uuid())
   title String
-  imageUrl? String
+  imageUrl String?
 
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -106,11 +107,12 @@ model Type {
 model Category {
   id    String @id @default(uuid())
   title String
-  imageUrl? String
+  imageUrl String?
 
   typeId String?
   type   Type?   @relation(fields: [typeId], references: [id])
 
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -126,6 +128,7 @@ model SubCategory {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -150,6 +153,7 @@ model GroupsOnGoods {
   groupId String
   groups  Group  @relation(fields: [groupId], references: [id])
 
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -203,7 +207,6 @@ model Stock {
   description String?
   quantity    Int
 
-  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -211,7 +214,7 @@ model Stock {
   goodId String
   good   Goods  @relation(fields: [goodId], references: [id])
 
-  orders Order[]
+  orderItems OrderItem[]
 }
 
 enum Size {
@@ -232,16 +235,30 @@ model Order {
   customerId String
   customer   User   @relation(fields: [customerId], references: [id])
 
-  stockId String
-  stock   Stock  @relation(fields: [stockId], references: [id])
-
   deliveryInfoId String @unique
   deliveryInfo  DeliveryInfo  @relation(fields: [deliveryInfoId], references: [id])
 
   paymentInfoId String @unique
   paymentInfo  PaymentInfo  @relation(fields: [paymentInfoId], references: [id])
 
-  isActive  Boolean  @default(true)
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
+
+model OrderItem {
+  id  String @unique @default(uuid())
+
+  quantity Int @default(0)
+  price Float @default(0)
+  stockId String
+  stock   Stock  @relation(fields: [stockId], references: [id])
+
+  orderId String
+  order  Order  @relation(fields: [orderId], references: [id])
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
@@ -290,6 +307,7 @@ model PaymentMethod {
   id String @unique @default(uuid())
   type PaymentType @default(COD)
   charge Float @default(0)
+  description String
 
   paymentInfo PaymentInfo[]
 

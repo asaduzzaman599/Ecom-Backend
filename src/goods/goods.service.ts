@@ -107,6 +107,7 @@ export class GoodsService {
 
   async update(id: string, updateGoodDto: UpdateGoodDto) {
     const exist = await this.findOne({ id });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { stocks, ...dto } = updateGoodDto;
     if (!exist) throw new NotFoundException('Products not found!');
 
