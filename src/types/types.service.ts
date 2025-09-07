@@ -38,15 +38,32 @@ export class TypesService {
       const { limit: take, page, search, ...query } = args;
       const skip = page * take - take;
 
-      const [categories, count] = await Promise.all([
-        this.customPrisma.type.findMany({
-          ...(query ? { where: query } : null),
-          ...(select ? { select } : null),
-          skip,
-          take,
-        }),
+      const searchQueries = {
+        OR: ['title'].map((i) => ({
+          [i]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        })),
+      };
+
+      const queries: Prisma.TypeFindManyArgs = {
+        ...(query
+          ? {
+              where: {
+                ...searchQueries,
+                ...query,
+              },
+            }
+          : null),
+        ...(select ? { select } : null),
+        skip,
+        take,
+      };
+      const [types, count] = await Promise.all([
+        this.customPrisma.type.findMany(queries),
         this.customPrisma.type.count({
-          ...(query ? { where: query } : null),
+          ...(query ? { where: queries.where } : null),
           select: {
             _all: true,
           },
@@ -54,7 +71,7 @@ export class TypesService {
       ]);
 
       return {
-        items: categories,
+        items: types,
         total: count._all,
         hasNextPage: count._all / take > page,
         hasPreviousPage: page > 1,

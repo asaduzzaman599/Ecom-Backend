@@ -45,16 +45,33 @@ export class CategoriesService {
     try {
       const { limit: take, page, search, ...query } = args;
       const skip = page * take - take;
+      const searchQueries = {
+        OR: ['title'].map((i) => ({
+          [i]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        })),
+      };
+
+      const queries: Prisma.CategoryFindManyArgs = {
+        ...(query
+          ? {
+              where: {
+                ...searchQueries,
+                ...query,
+              },
+            }
+          : null),
+        ...(select ? { select } : null),
+        skip,
+        take,
+      };
 
       const [categories, count] = await Promise.all([
-        this.customPrisma.category.findMany({
-          ...(query ? { where: query } : null),
-          ...(select ? { select } : null),
-          skip,
-          take,
-        }),
+        this.customPrisma.category.findMany(queries),
         this.customPrisma.category.count({
-          ...(query ? { where: query } : null),
+          ...(query ? { where: queries.where } : null),
           select: {
             _all: true,
           },

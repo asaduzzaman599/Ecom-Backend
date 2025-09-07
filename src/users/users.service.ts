@@ -57,8 +57,8 @@ export class UsersService {
       count,
       page,
       limit,
-      hasNext: count > limit * page,
-      hasPrevious: page != 1 && count > 0,
+      hasNextPage: count > limit * page,
+      hasPreviousPage: page != 1 && count > 0,
       totalPage: Math.ceil(count / limit),
     };
   }

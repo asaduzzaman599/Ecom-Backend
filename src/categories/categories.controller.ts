@@ -37,6 +37,7 @@ export class CategoriesController {
     return this.categoriesService.findAllByArgs({ page, limit, search });
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne({ id });
