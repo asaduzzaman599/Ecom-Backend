@@ -1,8 +1,8 @@
 import {
-  All,
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -19,6 +19,7 @@ import {
   UpdatePasswordDto,
 } from './dto/auth-input.dto';
 import { RequestWithUser } from 'libs/common/types/request-with-user';
+import { ALL } from 'libs/decorator/all_access.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -37,19 +38,28 @@ export class AuthController {
     return req.user;
   }
 
-  @Admin()
+  @ALL()
+  @Get('me')
+  async me(@Request() req) {
+    return {
+      user: req.user,
+      access_token: req.headers.authorization.replace('Bearer ', ''),
+    };
+  }
+
+  @Public()
   @Post('register-admin')
   registerAdmin(@Body() createAdminDto: SignupDto) {
     return this.authService.registerAdmin(createAdminDto);
   }
 
-  @All()
+  @ALL()
   @Post('reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  @All()
+  @ALL()
   @Patch()
   updatePassword(
     @Body() updatePasswordDto: UpdatePasswordDto,
