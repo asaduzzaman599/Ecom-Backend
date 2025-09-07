@@ -9,13 +9,24 @@ import { MasterService } from 'libs/master/master.service';
 import { CreateGoodDto } from './dto/create-good.dto';
 import { UpdateGoodDto } from './dto/update-good.dto';
 import { GoodsPaginatedArgs } from './dto/goods.arg';
+import { StocksService } from 'src/stocks/stocks.service';
 
 @Injectable()
 export class GoodsService {
-  constructor(private readonly customPrisma: MasterService) {}
+  constructor(
+    private readonly customPrisma: MasterService,
+    private readonly stocksService: StocksService,
+  ) {}
   create(createGoodDto: CreateGoodDto) {
-    return this.customPrisma.goods.create({
-      data: createGoodDto,
+    const { stocks, ...data } = createGoodDto;
+
+    return this.customPrisma.$transaction(async (tx) => {
+      const good = await this.customPrisma.goods.create({ data });
+      await this.stocksService.createMany(
+        stocks.map((i) => ({ ...i, goodId: good.id })),
+        { tx },
+      );
+      return good;
     });
   }
 
@@ -96,12 +107,12 @@ export class GoodsService {
 
   async update(id: string, updateGoodDto: UpdateGoodDto) {
     const exist = await this.findOne({ id });
-
+    const { stocks, ...dto } = updateGoodDto;
     if (!exist) throw new NotFoundException('Products not found!');
 
     return this.customPrisma.goods.update({
       where: { id },
-      data: updateGoodDto,
+      data: dto,
     });
   }
 
