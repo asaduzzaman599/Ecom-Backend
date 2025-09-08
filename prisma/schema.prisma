@@ -228,10 +228,10 @@ enum Size {
 
 model Order {
   id  String @unique @default(uuid())
-  oId String @unique
+  oId Int @unique @default(autoincrement())
 
   status OrderStatus @default(INREVIEW)
-
+  remarks String
   customerId String
   customer   User   @relation(fields: [customerId], references: [id])
 

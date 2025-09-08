@@ -19,6 +19,7 @@ import { TypesModule } from './types/types.module';
 import { StocksModule } from './stocks/stocks.module';
 import { OrderItemsModule } from './order-items/order-items.module';
 import { DeliveryInfosModule } from './delivery-infos/delivery-infos.module';
+import { PaymentInfosModule } from './payment-infos/payment-infos.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { DeliveryInfosModule } from './delivery-infos/delivery-infos.module';
     StocksModule,
     OrderItemsModule,
     DeliveryInfosModule,
+    PaymentInfosModule,
   ],
   controllers: [AppController],
   providers: [

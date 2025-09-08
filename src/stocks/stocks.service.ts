@@ -22,6 +22,14 @@ export class StocksService {
       data: createDto,
     });
   }
+  findAll(args?: StockPaginatedArgs) {
+    return this.customPrisma.stock.findMany({
+      ...(args ? { where: args } : null),
+      include: {
+        good: true,
+      },
+    });
+  }
 
   async findAllByArgs(
     args?: StockPaginatedArgs,
