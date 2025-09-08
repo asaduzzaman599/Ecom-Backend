@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { StockCreateDto } from './dto/stock-create.dto';
 import { Prisma } from '@prisma/client';
 import { MasterService } from 'libs/master/master.service';
@@ -8,9 +12,28 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 @Injectable()
 export class StocksService {
   constructor(private readonly customPrisma: MasterService) {}
-  create(createDto: StockCreateDto, option?: { tx: Prisma.TransactionClient }) {
+  async create(
+    createDto: StockCreateDto,
+    option?: { tx: Prisma.TransactionClient },
+  ) {
+    const exist = await this.findAll({
+      goodId: createDto.goodId,
+      size: createDto.size,
+      color: createDto.color,
+    });
+
+    if (exist.length > 0)
+      throw new ConflictException(
+        `Stock already exist! ${exist[0].good.title} : ${exist[0].size} : ${exist[0].color}`,
+      );
+
+    const dto = {
+      ...createDto,
+      quantity: 0,
+    };
+
     return (option?.tx ?? this.customPrisma).stock.create({
-      data: createDto,
+      data: dto,
     });
   }
 
@@ -22,7 +45,17 @@ export class StocksService {
       data: createDto,
     });
   }
-  findAll(args?: StockPaginatedArgs) {
+
+  findOne(args?: Prisma.StockWhereUniqueInput) {
+    return this.customPrisma.stock.findUnique({
+      ...(args ? { where: args } : null),
+      include: {
+        good: true,
+      },
+    });
+  }
+
+  findAll(args?: Prisma.StockWhereInput) {
     return this.customPrisma.stock.findMany({
       ...(args ? { where: args } : null),
       include: {

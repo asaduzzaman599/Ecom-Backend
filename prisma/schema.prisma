@@ -338,3 +338,24 @@ model Attachment {
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
 }
+
+model StockActivities {
+  id           String @unique @default(uuid())
+  
+  type StockActivityType @default(INCREMENT)
+  quantity Int @default(0)
+
+  stockId String
+
+  
+  createdBy String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
+
+enum StockActivityType {
+  INCREMENT
+  DECREMENT
+}
