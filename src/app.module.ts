@@ -18,6 +18,7 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 import { TypesModule } from './types/types.module';
 import { StocksModule } from './stocks/stocks.module';
 import { OrderItemsModule } from './order-items/order-items.module';
+import { DeliveryInfosModule } from './delivery-infos/delivery-infos.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { OrderItemsModule } from './order-items/order-items.module';
     TypesModule,
     StocksModule,
     OrderItemsModule,
+    DeliveryInfosModule,
   ],
   controllers: [AppController],
   providers: [
