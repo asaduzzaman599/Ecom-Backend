@@ -342,7 +342,7 @@ model Attachment {
 model StockActivities {
   id           String @unique @default(uuid())
   
-  type StockActivityType @default(INCREMENT)
+  type StockActivityType @default(RESTOCK)
   quantity Int @default(0)
 
   stockId String
@@ -356,6 +356,8 @@ model StockActivities {
 }
 
 enum StockActivityType {
-  INCREMENT
-  DECREMENT
+  SALES
+  RESTOCK
+  RETURNED
+  DEDUCTED
 }

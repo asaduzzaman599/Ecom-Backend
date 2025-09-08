@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { MasterService } from 'libs/master/master.service';
 import { StockPaginatedArgs } from './dto/stocks.args';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { StockUpdateDto } from './dto/stock-update.dto';
 
 @Injectable()
 export class StocksService {
@@ -114,5 +115,25 @@ export class StocksService {
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
+  }
+
+  update(
+    id: string,
+    updateStockDto: StockUpdateDto,
+    option?: { tx: Prisma.TransactionClient },
+  ) {
+    const { quantity, ...dto } = updateStockDto;
+
+    const updateDto: Prisma.StockUpdateInput = {
+      ...dto,
+      quantity: {
+        increment: quantity,
+      },
+    };
+
+    return (option?.tx ?? this.customPrisma).stock.update({
+      where: { id },
+      data: updateDto,
+    });
   }
 }

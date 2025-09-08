@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+} from '@nestjs/common';
 import { StockActivitiesService } from './stock-activities.service';
 import { CreateStockActivityDto } from './dto/create-stock-activity.dto';
 import { UpdateStockActivityDto } from './dto/update-stock-activity.dto';
+import { RequestWithUser } from 'libs/common/types/request-with-user';
 
 @Controller('stock-activities')
 export class StockActivitiesController {
-  constructor(private readonly stockActivitiesService: StockActivitiesService) {}
+  constructor(
+    private readonly stockActivitiesService: StockActivitiesService,
+  ) {}
 
   @Post()
-  create(@Body() createStockActivityDto: CreateStockActivityDto) {
-    return this.stockActivitiesService.create(createStockActivityDto);
+  create(
+    @Body() createStockActivityDto: CreateStockActivityDto,
+    @Request() context?: RequestWithUser,
+  ) {
+    return this.stockActivitiesService.create(createStockActivityDto, {
+      context,
+    });
   }
 
   @Get()
@@ -23,7 +40,10 @@ export class StockActivitiesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStockActivityDto: UpdateStockActivityDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateStockActivityDto: UpdateStockActivityDto,
+  ) {
     return this.stockActivitiesService.update(+id, updateStockActivityDto);
   }
 
