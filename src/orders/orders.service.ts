@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -13,7 +14,7 @@ import { DeliveryInfosService } from 'src/delivery-infos/delivery-infos.service'
 import { CreateOrderItemDto } from 'src/order-items/dto/create-order-item.dto';
 import { CreatePaymentInfoDto } from 'src/payment-infos/dto/create-payment-info.dto';
 import { PaymentInfosService } from 'src/payment-infos/payment-infos.service';
-import { Prisma } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { OrderPaginatedArgs } from './dto/order.args';
 
 @Injectable()
@@ -133,6 +134,56 @@ export class OrdersService {
     return this.customPrisma.order.findUnique({ where: args });
   }
 
+  async updateOrderStatus(
+    id: string,
+    status: string,
+    context: RequestWithUser,
+  ) {
+    try {
+      const order = await this.findOne({ id });
+      if (!order) throw new NotFoundException('order not found');
+
+      let updatedStatus: OrderStatus;
+      switch (status) {
+        case OrderStatus.INPROGRESS:
+        case OrderStatus.REJECTED:
+        case OrderStatus.REJECTED:
+          if (order.status === OrderStatus.INREVIEW) {
+            updatedStatus = status;
+          } else {
+            throw new BadRequestException('order is not in review');
+          }
+          break;
+        case OrderStatus.OUTFORDELIVERY:
+          if (order.status === OrderStatus.INPROGRESS) {
+            updatedStatus = status;
+          } else {
+            throw new BadRequestException('Order is not in progress');
+          }
+          break;
+        case OrderStatus.CANCELLED:
+          if (
+            order.status !== OrderStatus.REJECTED ||
+            order.status !== OrderStatus.DELIVERED ||
+            order.status !== OrderStatus.CANCELLED
+          ) {
+            updatedStatus = status;
+          } else {
+            throw new BadRequestException(`Order is already ${order.status}`);
+          }
+          break;
+        default:
+          throw new BadRequestException('Invalid status');
+      }
+
+      return this.customPrisma.order.update({
+        where: { id },
+        data: { status },
+      });
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
   update(id: number, updateOrderDto: UpdateOrderDto) {
     return `This action updates a #${id} order`;
   }
