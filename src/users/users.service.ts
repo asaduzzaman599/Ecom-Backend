@@ -27,8 +27,8 @@ export class UsersService {
     });
   }
   async findAllPaginated(paginationOption: PaginationDto) {
-    const page = +paginationOption.page;
-    const limit = +paginationOption.limit;
+    const page = paginationOption.page;
+    const limit = paginationOption.limit;
     const skip = (page - 1) * limit;
 
     const queries: Prisma.UserFindManyArgs = {
