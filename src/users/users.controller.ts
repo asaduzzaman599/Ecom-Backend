@@ -1,5 +1,5 @@
 import {
-  All,
+
   Body,
   Controller,
   Delete,
@@ -14,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { RequestWithUser } from 'libs/common/types/request-with-user';
 import { PaginationDto } from 'src/libs/common/dto/pagination';
+import { ALL } from 'libs/decorator/all_access.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -25,13 +26,13 @@ export class UsersController {
     return this.usersService.findAllPaginated(paginationDto);
   }
 
-  @All()
+  @ALL()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne({ id });
   }
 
-  @All()
+  @ALL()
   @Patch(':id')
   update(
     @Param('id') id: string,
