@@ -11,7 +11,7 @@ export class CreateStockActivityDto {
 
   @IsOptional()
   @IsNumber()
-  damageQuantity?: number;
+  damageQty?: number;
 
   @IsNotEmpty()
   stockId: string;

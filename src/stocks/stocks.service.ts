@@ -122,13 +122,13 @@ export class StocksService {
     updateStockDto: StockUpdateDto,
     option?: { tx: Prisma.TransactionClient },
   ) {
-    const { quantity, damageQuantity, ...dto } = updateStockDto;
+    const { quantity, damageQty, ...dto } = updateStockDto;
 
     const updateDto: Prisma.StockUpdateInput = {
       ...dto,
       quantity: {
         increment: quantity,
-        ...(damageQuantity ? { increment: damageQuantity } : null),
+        ...(damageQty ? { increment: damageQty } : null),
       },
     };
 

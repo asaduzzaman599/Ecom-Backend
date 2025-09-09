@@ -206,7 +206,7 @@ model Stock {
   color       String?
   description String?
   quantity    Int @default(0)
-  damageQuantity Int  @default(0)
+  damageQty Int  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -273,8 +273,9 @@ enum OrderStatus {
   CANCELLED
   REJECTED
   RETURNED
-  REFUND
+  REFUNDED
   FAILED
+  COMPLETED
 }
 
 model DeliveryInfo {

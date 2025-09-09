@@ -35,7 +35,7 @@ export class StockActivitiesService {
     };
     await options.tx.stockActivities.create({ data });
 
-    const { type, quantity, damageQuantity } = createStockActivityDto;
+    const { type, quantity, damageQty } = createStockActivityDto;
     let updatedQuantity = quantity;
     if (type === StockActivityType.DAMAGED) {
       updatedQuantity = 0;
@@ -52,7 +52,7 @@ export class StockActivitiesService {
       createStockActivityDto.stockId,
       {
         quantity: updatedQuantity,
-        damageQuantity,
+        damageQty,
       },
       { tx: options.tx },
     );
@@ -67,14 +67,14 @@ export class StockActivitiesService {
   }
 
   return(createStockActivityDto: CreateStockActivityDto, options?: Options) {
-    if (createStockActivityDto.damageQuantity === 0) {
+    if (createStockActivityDto.damageQty === 0) {
       return this.increment(
         { ...createStockActivityDto, type: StockActivityType.RETURNED },
         options,
       );
     } else {
       const quantity =
-        createStockActivityDto.quantity - createStockActivityDto.damageQuantity;
+        createStockActivityDto.quantity - createStockActivityDto.damageQty;
 
       if (quantity > 0) {
         this.increment(
@@ -83,7 +83,7 @@ export class StockActivitiesService {
             quantity,
             type: StockActivityType.PARTIALLYRETURNED,
             stockId: createStockActivityDto.stockId,
-            damageQuantity: createStockActivityDto.damageQuantity,
+            damageQty: createStockActivityDto.damageQty,
           },
           options,
         );
