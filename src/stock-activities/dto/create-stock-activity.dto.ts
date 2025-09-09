@@ -1,5 +1,5 @@
 import { StockActivities } from '@prisma/client';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateStockActivityDto {
   @IsNotEmpty()
@@ -9,6 +9,13 @@ export class CreateStockActivityDto {
   @IsNumber()
   quantity: number;
 
+  @IsOptional()
+  @IsNumber()
+  damageQuantity?: number;
+
   @IsNotEmpty()
   stockId: string;
+
+  @IsOptional()
+  orderItemId?: string;
 }

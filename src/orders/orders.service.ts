@@ -68,7 +68,7 @@ export class OrdersService {
           orderId: order.id,
         }));
 
-        await this.orderItemsService.createMany(orderItemsDto, { tx });
+        await this.orderItemsService.createMany(orderItemsDto, { tx, context });
         return order;
       });
     } catch (error) {

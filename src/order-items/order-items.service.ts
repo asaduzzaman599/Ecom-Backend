@@ -1,15 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { MasterService } from 'libs/master/master.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, StockActivityType } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { StocksService } from 'src/stocks/stocks.service';
+import { CreateStockActivityDto } from 'src/stock-activities/dto/create-stock-activity.dto';
+import { StockActivitiesService } from 'src/stock-activities/stock-activities.service';
+import { Options } from 'libs/common/types/Options';
 
 @Injectable()
 export class OrderItemsService {
   constructor(
     private readonly customPrisma: MasterService,
     private readonly stocksService: StocksService,
+    private readonly stockActivitiesService: StockActivitiesService,
   ) {}
   create(
     createOrderItemDto: CreateOrderItemDto,
@@ -22,7 +26,7 @@ export class OrderItemsService {
 
   async createMany(
     createOrderItemDto: CreateOrderItemDto[],
-    option?: { tx: Prisma.TransactionClient },
+    options?: Options,
   ) {
     const stockIds = createOrderItemDto.map((item) => item.stockId);
     const uniqueIds = new Set(stockIds);
@@ -34,22 +38,32 @@ export class OrderItemsService {
       throw new NotFoundException('Stocks not matched or found');
     }
 
-    stocks.forEach((stock) => {
-      if (stock.quantity === 0) {
-        throw new NotFoundException(`Stock out for ${stock.good.title}`);
-      }
+    await Promise.all(
+      stocks.map((stock) => {
+        if (stock.quantity === 0) {
+          throw new NotFoundException(`Stock out for ${stock.good.title}`);
+        }
 
-      const itemDtos = createOrderItemDto.filter((i) => i.stockId === stock.id);
-      const quantity = itemDtos.reduce((acc, item) => acc + item.quantity, 0);
-
-      if (quantity > stock.quantity) {
-        throw new NotFoundException(
-          `Stock not enough for ${stock.good.title}, only ${stock.quantity} left`,
+        const itemDtos = createOrderItemDto.filter(
+          (i) => i.stockId === stock.id,
         );
-      }
-    });
+        const quantity = itemDtos.reduce((acc, item) => acc + item.quantity, 0);
 
-    return (option?.tx ?? this.customPrisma).orderItem.createMany({
+        if (quantity > stock.quantity) {
+          throw new NotFoundException(
+            `Stock not enough for ${stock.good.title}, only ${stock.quantity} left`,
+          );
+        }
+        const stockActivityDto: CreateStockActivityDto = {
+          quantity: quantity,
+          stockId: stock.id,
+          type: StockActivityType.ONSALE,
+        };
+        return this.stockActivitiesService.decrement(stockActivityDto, options);
+      }),
+    );
+
+    return (options?.tx ?? this.customPrisma).orderItem.createMany({
       data: createOrderItemDto,
     });
   }

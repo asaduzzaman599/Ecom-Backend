@@ -205,7 +205,8 @@ model Stock {
   size        Size    @default(NONE)
   color       String?
   description String?
-  quantity    Int
+  quantity    Int @default(0)
+  damageQuantity Int  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -271,6 +272,8 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
   REJECTED
+  RETURNED
+  REFUND
   FAILED
 }
 
@@ -363,6 +366,7 @@ enum StockActivityType {
   ONSALE
   RESTOCK
   RETURNED
+  PARTIALLYRETURNED
   DAMAGED
   DEDUCTED
 }

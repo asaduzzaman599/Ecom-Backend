@@ -4,6 +4,7 @@ import { UpdateStockActivityDto } from './dto/update-stock-activity.dto';
 import { Options } from 'libs/common/types/Options';
 import { MasterService } from 'libs/master/master.service';
 import { StocksService } from 'src/stocks/stocks.service';
+import { StockActivityType } from '@prisma/client';
 
 @Injectable()
 export class StockActivitiesService {
@@ -15,27 +16,46 @@ export class StockActivitiesService {
     createStockActivityDto: CreateStockActivityDto,
     options?: Options,
   ) {
+    if (options.tx) {
+      return this.createHelper(createStockActivityDto, { tx: options.tx });
+    }
+
+    return this.customPrisma.$transaction(async (tx) => {
+      return this.createHelper(createStockActivityDto, { tx });
+    });
+  }
+
+  async createHelper(
+    createStockActivityDto: CreateStockActivityDto,
+    options?: Options,
+  ) {
     const data = {
       ...createStockActivityDto,
       ...(options.context ? { createdBy: options.context.user.id } : null),
     };
-    if (options.tx) {
-      await options.tx.stockActivities.create({ data });
-      await this.stocksService.update(
-        createStockActivityDto.stockId,
-        { quantity: createStockActivityDto.quantity },
-        { tx: options.tx },
-      );
+    await options.tx.stockActivities.create({ data });
+
+    const { type, quantity, damageQuantity } = createStockActivityDto;
+    let updatedQuantity = quantity;
+    if (type === StockActivityType.DAMAGED) {
+      updatedQuantity = 0;
     }
 
-    return this.customPrisma.$transaction(async (tx) => {
-      await tx.stockActivities.create({ data });
-      await this.stocksService.update(
-        createStockActivityDto.stockId,
-        { quantity: createStockActivityDto.quantity },
-        { tx },
-      );
-    });
+    if (
+      StockActivityType.ONSALE === type ||
+      StockActivityType.DEDUCTED === type
+    ) {
+      updatedQuantity = -quantity;
+    }
+
+    await this.stocksService.update(
+      createStockActivityDto.stockId,
+      {
+        quantity: updatedQuantity,
+        damageQuantity,
+      },
+      { tx: options.tx },
+    );
   }
 
   increment(createStockActivityDto: CreateStockActivityDto, options?: Options) {
@@ -44,6 +64,36 @@ export class StockActivitiesService {
 
   decrement(createStockActivityDto: CreateStockActivityDto, options?: Options) {
     return this.create({ ...createStockActivityDto }, options);
+  }
+
+  return(createStockActivityDto: CreateStockActivityDto, options?: Options) {
+    if (createStockActivityDto.damageQuantity === 0) {
+      return this.increment(
+        { ...createStockActivityDto, type: StockActivityType.RETURNED },
+        options,
+      );
+    } else {
+      const quantity =
+        createStockActivityDto.quantity - createStockActivityDto.damageQuantity;
+
+      if (quantity > 0) {
+        this.increment(
+          {
+            orderItemId: createStockActivityDto.orderItemId,
+            quantity,
+            type: StockActivityType.PARTIALLYRETURNED,
+            stockId: createStockActivityDto.stockId,
+            damageQuantity: createStockActivityDto.damageQuantity,
+          },
+          options,
+        );
+      } else {
+        this.create(
+          { ...createStockActivityDto, type: StockActivityType.DAMAGED },
+          options,
+        );
+      }
+    }
   }
 
   findAll() {
