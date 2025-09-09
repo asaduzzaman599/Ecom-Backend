@@ -291,7 +291,9 @@ model DeliveryInfo {
 model PaymentInfo {
   id      String @unique @default(uuid())
   additionalCharge Float  @default(0)
-  
+
+  deliveryMethodId String
+
   paymentMethodId String 
   paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
 
@@ -347,6 +349,8 @@ model StockActivities {
 
   stockId String
 
+  orderItemId String?
+
   
   createdBy String?
   isActive  Boolean  @default(true)
@@ -356,8 +360,22 @@ model StockActivities {
 }
 
 enum StockActivityType {
-  SALES
+  ONSALE
   RESTOCK
   RETURNED
+  DAMAGED
   DEDUCTED
+}
+
+model DeliveryMethod {
+  id String @unique @default(uuid())
+
+  type String
+  charge Decimal
+  
+  createdBy String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
 }

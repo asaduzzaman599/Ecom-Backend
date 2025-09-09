@@ -43,7 +43,12 @@ class OrderPaymentMethodInfo {
   @IsNotEmpty()
   @IsString()
   paymentMethodId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  deliveryMethodId: string;
 }
+
 export class CreateOrderDto {
   @IsOptional()
   @IsString()

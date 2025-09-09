@@ -21,6 +21,7 @@ import { OrderItemsModule } from './order-items/order-items.module';
 import { DeliveryInfosModule } from './delivery-infos/delivery-infos.module';
 import { PaymentInfosModule } from './payment-infos/payment-infos.module';
 import { StockActivitiesModule } from './stock-activities/stock-activities.module';
+import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { StockActivitiesModule } from './stock-activities/stock-activities.modul
     DeliveryInfosModule,
     PaymentInfosModule,
     StockActivitiesModule,
+    DeliveryMethodsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -10,4 +10,8 @@ export class CreatePaymentInfoDto {
   @IsNotEmpty()
   @IsString()
   paymentMethodId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  deliveryMethodId: string;
 }

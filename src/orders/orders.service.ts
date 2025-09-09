@@ -36,6 +36,7 @@ export class OrdersService {
       const paymentMethodInfoDto: CreatePaymentInfoDto = {
         additionalCharge: paymentInfo.additionalCharge,
         paymentMethodId: paymentInfo.paymentMethodId,
+        deliveryMethodId: paymentInfo.deliveryMethodId,
       };
       return this.customPrisma.$transaction(async (tx) => {
         const savedDeliveryInfo = await this.deliveryInfosService.create(
