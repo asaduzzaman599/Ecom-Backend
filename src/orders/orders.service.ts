@@ -22,6 +22,8 @@ import {
 } from '@prisma/client';
 import { OrderPaginatedArgs } from './dto/order.args';
 import { StockActivitiesService } from 'src/stock-activities/stock-activities.service';
+import { OrderLogsService } from 'src/order-logs/order-logs.service';
+import { CreateOrderLogDto } from 'src/order-logs/dto/create-order-log.dto';
 
 @Injectable()
 export class OrdersService {
@@ -31,6 +33,7 @@ export class OrdersService {
     private readonly orderItemsService: OrderItemsService,
     private readonly paymentInfosService: PaymentInfosService,
     private readonly stockActivitiesService: StockActivitiesService,
+    private readonly orderLogsService: OrderLogsService,
   ) {}
   create(createOrderDto: CreateOrderDto, context: RequestWithUser) {
     try {
@@ -77,6 +80,12 @@ export class OrdersService {
         }));
 
         await this.orderItemsService.createMany(orderItemsDto, { tx, context });
+        const logDto: CreateOrderLogDto = {
+          orderId: order.id,
+          triggerById: context.user.id,
+          status: order.status,
+        };
+        await this.orderLogsService.create(logDto, { tx, context });
         return order;
       });
     } catch (error) {
@@ -269,6 +278,12 @@ export class OrdersService {
             ),
           ]);
         }
+        const logDto: CreateOrderLogDto = {
+          orderId: dto.id,
+          status: updatedStatus,
+          triggerById: context.user.id,
+        };
+        await this.orderLogsService.create(logDto, { tx, context });
         return tx.order.update({
           where: { id: dto.id },
           data: { status: updatedStatus },

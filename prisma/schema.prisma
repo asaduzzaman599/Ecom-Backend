@@ -384,3 +384,15 @@ model DeliveryMethod {
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
 }
+
+model OrderLog {
+  id String @unique @default(uuid())
+
+  triggerById String
+  status OrderStatus
+  orderId String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+}
