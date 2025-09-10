@@ -229,8 +229,8 @@ export class OrdersService {
         default:
           throw new BadRequestException('Invalid status');
       }
-      const ordertems = order.orderItems.map((item) => {
-        const damageItem = dto.damageItems.find(
+      const orderItems = order.orderItems.map((item) => {
+        const damageItem = dto.damageItems?.find(
           (d) => d?.orderItemId === item.id,
         );
         return {
@@ -246,7 +246,7 @@ export class OrdersService {
           OrderStatus.REJECTED === updatedStatus
         ) {
           await Promise.all([
-            ...ordertems.map((i) =>
+            ...orderItems.map((i) =>
               this.stockActivitiesService.increment(
                 { ...i, type: StockActivityType.RETURNED },
                 {
@@ -258,7 +258,7 @@ export class OrdersService {
           ]);
         } else if (OrderStatus.RETURNED === updatedStatus) {
           await Promise.all([
-            ...ordertems.map((i) =>
+            ...orderItems.map((i) =>
               this.stockActivitiesService.return(
                 { ...i, type: StockActivityType.RETURNED },
                 {
